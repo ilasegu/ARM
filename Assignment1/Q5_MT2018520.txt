@@ -1,0 +1,7 @@
+To find out if a number is odd or even using STM32 Discovery board.
+
+The first step is to install all the packages and drivers needed for the STM32 F4 Discovery board.
+This can be done using pack installer.
+Next,we can assign the input values from the keyboard/sensor to GPIO pins.
+The output can be seen from the LED. If it blinks, the input is odd else even.
+For debugging, in keil we have to change the configuration of Flash tools and select debug option as the ULINK2/ME cortex Debugger.
