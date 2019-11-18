@@ -12,10 +12,20 @@ void printMsg(const int a)
       ++ptr;
    }
 }
-void printMsg2p(const int a, const int b)
+void printMsg3p(const int a, const int b,const int c)
 {
+	
 	 char Msg[100];
 	 char *ptr;
+	 // Printing the message
+	sprintf(Msg,"\nPrinting  deg:  ");
+	 ptr = Msg ;
+   while(*ptr != '\0')
+	 {
+      ITM_SendChar(*ptr);
+      ++ptr;
+   }
+	 //Printing the first parameter
 	 sprintf(Msg, "%x", a);
 	 ptr = Msg ;
    while(*ptr != '\0')
@@ -23,7 +33,29 @@ void printMsg2p(const int a, const int b)
       ITM_SendChar(*ptr);
       ++ptr;
    }
+	 // Printing the message
+	 sprintf(Msg,"For  x: ");
+	 ptr = Msg ;
+   while(*ptr != '\0')
+	 {
+      ITM_SendChar(*ptr);
+      ++ptr;
+   }
 	 sprintf(Msg, "%x", b);
+	 ptr = Msg ;
+   while(*ptr != '\0')
+	 {
+      ITM_SendChar(*ptr);
+      ++ptr;
+   }
+	  sprintf(Msg,"For y : ");
+	 ptr = Msg ;
+   while(*ptr != '\0')
+	 {
+      ITM_SendChar(*ptr);
+      ++ptr;
+   }
+	 sprintf(Msg, "%x", c);
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
