@@ -34,7 +34,7 @@ void printMsg3p(const int a, const int b,const int c)
       ++ptr;
    }
 	 // Printing the message
-	 sprintf(Msg,"For  x: ");
+	 sprintf(Msg," For  x: ");
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
@@ -48,7 +48,7 @@ void printMsg3p(const int a, const int b,const int c)
       ITM_SendChar(*ptr);
       ++ptr;
    }
-	  sprintf(Msg,"For y : ");
+	  sprintf(Msg," And y : ");
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
