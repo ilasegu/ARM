@@ -6,7 +6,7 @@
  	
 __main  FUNCTION
 	 VLDR.F32 S0,=360  ; 360 is the max degree
-     VLDR.F32 S19,=60	   ;Initial S17 value
+     VLDR.F32 S19,=0	   ;Initial S17 value
 	   
 	  
 while VMOV.F32  S1,S19  
@@ -98,12 +98,12 @@ evenoddsin
 	   
 cal   VMUL.F32 S12,S2,S6 ; x=rcos
 	  VMUL.F32 s13,S2,s8 ; y=rsin
-;	  VLDR.F32 S17,=319; h
-;	  VLDR.F32 S18,=239;k
+;	  VLDR.F32 S17,=100; h
+;	  VLDR.F32 S18,=200;k
 ;	  VADD.F32 S12,S12,S17 ;x=x+h
 	  VCVT.S32.F32 S12,s12
 	  VMOV r1,s12
-;	  VADD.F32 S13,S18,S13 ;y=y+k
+	 ; VADD.F32 S13,S18,S13 ;y=y+k
 	  VCVT.S32.F32 S13,s13
 	  VMOV r2,s13
 	  VCVT.S32.F32 S20,S19 ; print deg
