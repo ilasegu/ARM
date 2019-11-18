@@ -1,99 +1,122 @@
-	 AREA     tan, CODE, READONLY
+	 AREA     circle, CODE, READONLY
      EXPORT __main
 	 IMPORT printMsg
-	 IMPORT printMsg2p
+	 IMPORT printMsg3p
 	 IMPORT printMsg4p
-    ; ENTRY 	
-	;Here R0=n, R1=i ,R2=fact ,R3=2i ,R4=2i+1 ,R5=2 ,R6=0 or 1,R7=2 , R8=pi, R9=180
-;			S0=value of x in degree ,S1=sum of cos series,      S2=temp value of cosx
-;			S3=sum of sin series, 	 S4=temp value of sinx,     S5=pi/180
-;			S6=(x*x),				 S7=fact*2i for cos series  S8=fact*(2i+1) for sin series
-;			S9=pi					 S10=180
-;		S11= tanx value for the output
-;	
+ 	
 __main  FUNCTION
-	
-	
-	VLDR.F32 S12,=360  ;max angle        
-	VLDR.F32 S13,=20  ;radius
-	VLDR.F32 S0,=0    ;initial angle is 0      
-
-	
-check	VCMP.F32 S0,S12
-		BLT  start
-		B stop
-	
-start	MOV R0,#10;Holding the Number of Terms in Series 'n'
-        MOV R1,#1;Counting Variable 'i'
-		;VLDR.F32 S0,=60;Holding 'x' Value in degree
-	    LDR R8,=0x40490fd0 ; pi in hexadecimal floating point
-		VMOV S9,R8
-		LDR R9,=0x43340000 ;180 in hexadecimal floating point
-		VMOV S10,R9
-		BL convert	  ; To convert x from degree to radian
-		VMOV.F32 S1,#1; S1 holds sum of cos series
-		VMOV.F32 S2,#1; S2 holds temp values of cos series
-		VMOV.F32 S3,S0; S3 holds sum of sin series
-		VMOV.F32 S4,S0; S4 holds temp values of sin series
-		MOV R2,#1; for the factorial R2=fact 
-		VMUL.F32 S6,S0,S0 ; S6= x^2
-		MOV R7,#2 ; R7=2
-		VLDR.F32 S14,=10 ;for increment degree by 10
-		
-loop   CMP R1,R0
-	   BLT loop1
-	   B inc
+	 VLDR.F32 S0,=360  ; 360 is the max degree
+     VLDR.F32 S19,=60	   ;Initial S17 value
 	   
-loop1  
-       VMUL.F32 S2,S2,S6 ; S2=t1 in C code for cos
-	   VMUL.F32 S4,S4,S6 ; S4=t2 in C code for sin
+	  
+while VMOV.F32  S1,S19  
+ 
+     VLDR.F32 S2,=20   ;Radius=20
+     VLDR.F32 S15,=10  ; Increment
+	 
+     ;Calculating sin and cos
+     MOV r0,#10        ; no. of terms in cos
+     MOV r1,#1 			;counting variable
+	 LDR r2,=0x40490fdb ;pi value
+	 VMOV S3,r2			
+	 LDR r3,=0x43340000  ;180 value
+	 VMOV S4,r3          ;
+	 BL convert          ;s1 stores the radian value
+	 VMUL.F32 S5,S1,S1 ; S5=X^2
+	 MOV r4,#2 ; R4=2
+	 VMOV.F32 S6,#1; S6 holds sum of cos series
+	 VMOV.F32 S7,#1; S7 holds temp values of cos series
+	 VMOV.F32 S8,S1; S8 holds sum of sin series
+	 VMOV.F32 S9,S1; S9 holds temp values of sin series
 
-	   MUL R3,R1,R7       ; R3=2i
-	   ADD R4,R3,#1		 ; R4=2i+1
-	   MUL R2,R2,R3      ; R2=R2*2i
-	   VMOV S7,R2    ; Move to floating point register
-	   VCVT.F32.U32 S7, S7
-	   VDIV.F32 S2,S2,S7 ;t1/=fact
-	   MUL R2,R2,R4      ; R2=R2*(2i+1)
-       VMOV S8,R2    ; Move to floating point register
-	   VCVT.F32.U32 S8, S8
-	   VDIV.F32 S4,S4,S8 ;t2/=fact
-	   BL evnodd
-	   ;VDIV.F32 S11,S3,S1 ; tan= sin/cos
+check1     VCVT.S32.F32 S21,s19
+	       VMOV r9,s21
+		   VCVT.S32.F32 S22,s0
+	       VMOV r10,s22
+          CMP r9,r10   ;while degree<360
 
-       ADD R1,R1,#1       ;R1=R1+1
-	   B loop
-       
-inc   	VMUL.F32 S15,S1,S13
-        VCVT.U32.F32 S15,S15 ;to print cos
-		VMOV R0,S15
-		VMUL.F32 S16,S3,S13
-		VCVT.U32.F32 S16,S16 ;to print sin
-		VMOV  R1,S16
-		BL printMsg2p 
-		VADD.F32 S0,S0,S14
-		B check
-		
-		
-stop    B stop ; stop program
+	       BLT cos
+	       B stop
 
+cos   CMP r1,r0
+      BLT loop
+	  B loop2
+	   
+loop  VMUL.F32 S7,S7,S5 ; t1=t1*(x2)
+      MUL r5,r4,r1 ; r5=2i
+	  BL fact       ; r7 contain the fact(2i)
+	  VMOV s10,r7
+	  VCVT.F32.U32 s10,s10
+	  VDIV.F32 s11,s7,s10  ;t3=t1/f(2i)
+	  BL evenoddcos
+	  ADD r1,r1,#1    ;  r1=r1+1;
+	  B cos
+	      
+	  
+fact    MOV r6,r5 ; load n into r6
+        MOV r7,#1 ; if n = 0, at least n! = 1
+loop1    CMP r6, #0
+        MULGT r7, r6, r7
+        SUBGT r6, r6, #1 ; decrement n
+        BGT loop1 ; do another mul if counter!= 0
+	    BX lr
 
-
-convert VDIV.F32 S5,S9,S10 ; s5=pi/180
-		VMUL.F32 S0,S5,S0
+evenoddcos 
+		udiv R8,R1,R4 ;quotient of R1/2
+		mls R8,R8,R4,R1; R1-(2*R8) in R8
+		CMP R8,#0;
+		ITE GT
+		VSUBGT.F32 S6,S6,S11 ; c=c-t3
+		VADDLE.F32 S6,S6,S11; c=c+t3
 		BX LR
-		
-evnodd  MOV R5,#2;
-		udiv R6,R1,R5 ;quotient of R1/R2
-		mls R6,R6,R5,R1; R1-(R5*R6) in R6
-		CMP R6,#0;
-		ITTEE GT
-		VSUBGT.F32 S1,S1,S2 ; c=c-t1
-		VSUBGT.F32 S3,S3,S4 ; s=s-t2
-		VADDLE.F32 S1,S1,S2 ; c=c+t1
-		VADDLE.F32 S3,S3,S4 ; s=s+t2
-		BX LR
-		
+; for sine series
+
+loop2  MOV r0,#10        ; no. of terms in sin
+       MOV r1,#1          ; i value
+sin    CMP r1,r0
+       BLT loop3
+	   B cal	
+	   
+loop3  	VMUL.F32 s9,s9,s5 ; t2=t2*(x2)
+		MUL r5,r4,r1 ; r5=2i
+		ADD r5,r5,#1 ; r5=2i+1
+		BL fact ; r7 gives the factorial value
+		VMOV s10,r7
+	    VCVT.F32.U32 s10,s10
+	    VDIV.F32 s11,s9,s10  ;t3=t2/f(2i)
+	    BL evenoddsin
+	    ADD r1,r1,#1    ;  r1=r1+1;
+	    B sin
+evenoddsin
+		udiv R8,R1,R4 ;quotient of R1/2
+		mls R8,R8,R4,R1; R1-(2*R8) in R8
+		CMP R8,#0;
+		ITE GT
+		VSUBGT.F32 S8,S8,S11 ; s=s-t3
+		VADDLE.F32 S8,S8,S11 ; s=s+t3
+		BX LR	   
+	   
+cal   VMUL.F32 S12,S2,S6 ; x=rcos
+	  VMUL.F32 s13,S2,s8 ; y=rsin
+;	  VLDR.F32 S17,=319; h
+;	  VLDR.F32 S18,=239;k
+;	  VADD.F32 S12,S12,S17 ;x=x+h
+	  VCVT.S32.F32 S12,s12
+	  VMOV r1,s12
+;	  VADD.F32 S13,S18,S13 ;y=y+k
+	  VCVT.S32.F32 S13,s13
+	  VMOV r2,s13
+	  VCVT.S32.F32 S20,S19 ; print deg
+	  VMOV r0,S20
+	  BL printMsg3p
+      VADD.F32 S19,S19,S15
+	  B while
+	
+convert ;CMP S0,S12
+		VDIV.F32 S16,S3,S4 ; s16=pi/180
+		VMUL.F32 S1,S16,S1
+		BX LR	
+stop B stop		
 		
      ENDFUNC
      END 
