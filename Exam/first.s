@@ -1,9 +1,9 @@
-	 AREA     circle, CODE, READONLY
+AREA     circle, CODE, READONLY
      EXPORT __main
 	 IMPORT printMsg
 	 IMPORT printMsg3p
 	 IMPORT printMsg4p
- 	
+ 	; Radius of the circle=50 , centre shifted to(h,k)=(319,239)
 __main  FUNCTION
 	 VLDR.F32 S0,=360  ; 360 is the max degree
      VLDR.F32 S19,=0	   ;Initial S17 value
@@ -11,8 +11,8 @@ __main  FUNCTION
 	  
 while VMOV.F32  S1,S19  
  
-     VLDR.F32 S2,=20   ;Radius=20
-     VLDR.F32 S15,=10  ; Increment
+     VLDR.F32 S2,=50   ;Radius=20
+     VLDR.F32 S15,=1  ; Increment
 	 
      ;Calculating sin and cos
      MOV r0,#10        ; no. of terms in cos
@@ -33,7 +33,7 @@ check1     VCVT.S32.F32 S21,s19
 	       VMOV r9,s21
 		   VCVT.S32.F32 S22,s0
 	       VMOV r10,s22
-          CMP r9,r10   ;while degree<360
+           CMP r9,r10   ;while degree<360
 
 	       BLT cos
 	       B stop
@@ -44,22 +44,24 @@ cos   CMP r1,r0
 	   
 loop  VMUL.F32 S7,S7,S5 ; t1=t1*(x2)
       MUL r5,r4,r1 ; r5=2i
-	  BL fact       ; r7 contain the fact(2i)
-	  VMOV s10,r7
-	  VCVT.F32.U32 s10,s10
+	  BL fact       ; S23 contain the fact(2i)
+	  VMOV.F32 s10,S23
+	 ; VCVT.F32.U32 s10,s10
 	  VDIV.F32 s11,s7,s10  ;t3=t1/f(2i)
 	  BL evenoddcos
 	  ADD r1,r1,#1    ;  r1=r1+1;
 	  B cos
-	      
 	  
 fact    MOV r6,r5 ; load n into r6
-        MOV r7,#1 ; if n = 0, at least n! = 1
+        VLDR.F32 S23,=1 ; if n = 0, at least n! = 1
 loop1    CMP r6, #0
-        MULGT r7, r6, r7
-        SUBGT r6, r6, #1 ; decrement n
-        BGT loop1 ; do another mul if counter!= 0
-	    BX lr
+		VMOV S24,r6
+		VCVT.F32.U32 S24,S24
+         VMULHI.F32 S23, S24, S23
+         SUBHI r6, r6, #1 ; decrement n
+         BHI loop1 ; do another mul if counter!= 0
+	    BX lr	  
+
 
 evenoddcos 
 		udiv R8,R1,R4 ;quotient of R1/2
@@ -80,9 +82,9 @@ sin    CMP r1,r0
 loop3  	VMUL.F32 s9,s9,s5 ; t2=t2*(x2)
 		MUL r5,r4,r1 ; r5=2i
 		ADD r5,r5,#1 ; r5=2i+1
-		BL fact ; r7 gives the factorial value
-		VMOV s10,r7
-	    VCVT.F32.U32 s10,s10
+		BL fact ; S23 gives the factorial value
+		VMOV.F32 s10,S23
+	    ;VCVT.F32.U32 s10,s10
 	    VDIV.F32 s11,s9,s10  ;t3=t2/f(2i)
 	    BL evenoddsin
 	    ADD r1,r1,#1    ;  r1=r1+1;
@@ -98,17 +100,18 @@ evenoddsin
 	   
 cal   VMUL.F32 S12,S2,S6 ; x=rcos
 	  VMUL.F32 s13,S2,s8 ; y=rsin
-;	  VLDR.F32 S17,=100; h
-;	  VLDR.F32 S18,=200;k
-;	  VADD.F32 S12,S12,S17 ;x=x+h
+	  VLDR.F32 S17,=319; h
+	  VLDR.F32 S18,=239;k
+      VADD.F32 S12,S12,S17 ;x=x+h
 	  VCVT.S32.F32 S12,s12
 	  VMOV r1,s12
-	 ; VADD.F32 S13,S18,S13 ;y=y+k
+	  VADD.F32 S13,S18,S13 ;y=y+k
 	  VCVT.S32.F32 S13,s13
 	  VMOV r2,s13
 	  VCVT.S32.F32 S20,S19 ; print deg
 	  VMOV r0,S20
 	  BL printMsg3p
+	
       VADD.F32 S19,S19,S15
 	  B while
 	
