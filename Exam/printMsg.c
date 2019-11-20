@@ -5,12 +5,17 @@ void printMsg(const int a)
 {
 	 char Msg[100];
 	 char *ptr;
-	 sprintf(Msg, "%x", a);
+	 // Printing the message
+	
 	 ptr = Msg ;
-   while(*ptr != '\0'){
+   while(*ptr != '\0')
+	 {
       ITM_SendChar(*ptr);
       ++ptr;
    }
+	 //Printing the first parameter
+	 sprintf(Msg, "%d \n", a);
+	// sprintf(Msg,"\n ");
 }
 void printMsg3p(const int a, const int b,const int c)
 {
@@ -26,7 +31,7 @@ void printMsg3p(const int a, const int b,const int c)
       ++ptr;
    }
 	 //Printing the first parameter
-	 sprintf(Msg, "%x", a);
+	 sprintf(Msg, "%d", a);
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
@@ -41,7 +46,7 @@ void printMsg3p(const int a, const int b,const int c)
       ITM_SendChar(*ptr);
       ++ptr;
    }
-	 sprintf(Msg, "%x", b);
+	 sprintf(Msg, "%d", b);
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
@@ -55,7 +60,7 @@ void printMsg3p(const int a, const int b,const int c)
       ITM_SendChar(*ptr);
       ++ptr;
    }
-	 sprintf(Msg, "%x", c);
+	 sprintf(Msg, "%d", c);
 	 ptr = Msg ;
    while(*ptr != '\0')
 	 {
